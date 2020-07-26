@@ -61,15 +61,27 @@ class PAE(nn.Module):
         self.layer11 = self._add_DownSample_layer(2048, 4096, 1) # 76 ~ 79
         self.layer12 = self._add_BasicBlock_layer(4096, 2048, 2) # 80 ~ 85
 
-        # 86, 88, 90
+        # 86
         self.conv2 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
         self.bn2 = nn.BatchNorm2d(2048)
-        # 87, 89, 91
+        # 87
         self.conv3 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
         self.bn3 = nn.BatchNorm2d(4096)
+        # 88
+        self.conv4 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
+        self.bn4 = nn.BatchNorm2d(2048)
+        # 89
+        self.conv5 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
+        self.bn5 = nn.BatchNorm2d(4096)
+        # 90
+        self.conv6 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
+        self.bn6 = nn.BatchNorm2d(2048)
+        # 91
+        self.conv7 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
+        self.bn7 = nn.BatchNorm2d(4096)
         # 92
-        self.conv4 = nn.Conv2d(4096, 21, kernel_size= 1, stride= 1, padding= 0, bias= False)
-        self.bn4 = nn.BatchNorm2d(21)
+        self.conv8 = nn.Conv2d(4096, 21, kernel_size= 1, stride= 1, padding= 0, bias= False)
+        self.bn8 = nn.BatchNorm2d(21)
     
     def _add_DownSample_layer(self, in_planes, planes, num):
         layers = []
@@ -99,13 +111,13 @@ class PAE(nn.Module):
         out = self.layer10(out)
         out = self.layer11(out)
         out = self.layer12(out)
-        out = F.leaky_relu(self.bn2(self.conv2(x)))
-        out = F.leaky_relu(self.bn3(self.conv3(x)))
-        out = F.leaky_relu(self.bn2(self.conv2(x)))
-        out = F.leaky_relu(self.bn3(self.conv3(x)))
-        out = F.leaky_relu(self.bn2(self.conv2(x)))
-        out = F.leaky_relu(self.bn3(self.conv3(x)))
-        out = self.bn4(self.conv4(x))
+        out = F.leaky_relu(self.bn2(self.conv2(out)))
+        out = F.leaky_relu(self.bn3(self.conv3(out)))
+        out = F.leaky_relu(self.bn4(self.conv4(out)))
+        out = F.leaky_relu(self.bn5(self.conv5(out)))
+        out = F.leaky_relu(self.bn6(self.conv6(out)))
+        out = F.leaky_relu(self.bn7(self.conv7(out)))
+        out = self.bn8(self.conv8(out))
         return out
 
 model = PAE()
