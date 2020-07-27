@@ -54,33 +54,33 @@ class PAE(nn.Module):
         self.layer4 = self._add_BasicBlock_layer(256, 128, 7) # 16 ~ 36
         self.layer5 = self._add_DownSample_layer(256, 512, 1) # 37 ~ 40
         self.layer6 = self._add_BasicBlock_layer(512, 256, 4) # 41 ~ 52
-        self.layer7 = self._add_DownSample_layer(512, 1024, 1) # 53 ~ 56
-        self.layer8 = self._add_BasicBlock_layer(1024, 512, 3) # 57 ~ 65
-        self.layer9 = self._add_DownSample_layer(1024, 2048, 1) # 66 ~ 69
-        self.layer10 = self._add_BasicBlock_layer(2048, 1024, 2) # 70 ~ 75
-        self.layer11 = self._add_DownSample_layer(2048, 4096, 1) # 76 ~ 79
-        self.layer12 = self._add_BasicBlock_layer(4096, 2048, 2) # 80 ~ 85
+        self.layer7 = self._add_DownSample_layer(512, 512, 1) # 53 ~ 56
+        self.layer8 = self._add_BasicBlock_layer(512, 256, 3) # 57 ~ 65
+        self.layer9 = self._add_DownSample_layer(512, 512, 1) # 66 ~ 69
+        self.layer10 = self._add_BasicBlock_layer(512, 256, 2) # 70 ~ 75
+        self.layer11 = self._add_DownSample_layer(512, 512, 1) # 76 ~ 79
+        self.layer12 = self._add_BasicBlock_layer(512, 256, 2) # 80 ~ 85
 
         # 86
-        self.conv2 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
-        self.bn2 = nn.BatchNorm2d(2048)
+        self.conv2 = nn.Conv2d(512, 256, kernel_size= 1, stride =1 , padding= 0, bias= False)
+        self.bn2 = nn.BatchNorm2d(256)
         # 87
-        self.conv3 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
-        self.bn3 = nn.BatchNorm2d(4096)
+        self.conv3 = nn.Conv2d(256, 512, kernel_size= 3, stride =1 , padding= 1, bias= False)
+        self.bn3 = nn.BatchNorm2d(512)
         # 88
-        self.conv4 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
-        self.bn4 = nn.BatchNorm2d(2048)
+        self.conv4 = nn.Conv2d(512, 256, kernel_size= 1, stride =1 , padding= 0, bias= False)
+        self.bn4 = nn.BatchNorm2d(256)
         # 89
-        self.conv5 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
-        self.bn5 = nn.BatchNorm2d(4096)
+        self.conv5 = nn.Conv2d(256, 512, kernel_size= 3, stride =1 , padding= 1, bias= False)
+        self.bn5 = nn.BatchNorm2d(512)
         # 90
-        self.conv6 = nn.Conv2d(4096, 2048, kernel_size= 1, stride =1 , padding= 0, bias= False)
-        self.bn6 = nn.BatchNorm2d(2048)
+        self.conv6 = nn.Conv2d(512, 256, kernel_size= 1, stride =1 , padding= 0, bias= False)
+        self.bn6 = nn.BatchNorm2d(256)
         # 91
-        self.conv7 = nn.Conv2d(2048, 4096, kernel_size= 3, stride =1 , padding= 1, bias= False)
-        self.bn7 = nn.BatchNorm2d(4096)
+        self.conv7 = nn.Conv2d(256, 512, kernel_size= 3, stride =1 , padding= 1, bias= False)
+        self.bn7 = nn.BatchNorm2d(512)
         # 92
-        self.conv8 = nn.Conv2d(4096, 21, kernel_size= 1, stride= 1, padding= 0, bias= False)
+        self.conv8 = nn.Conv2d(512, 21, kernel_size= 1, stride= 1, padding= 0, bias= False)
         self.bn8 = nn.BatchNorm2d(21)
     
     def _add_DownSample_layer(self, in_planes, planes, num):
@@ -118,7 +118,9 @@ class PAE(nn.Module):
         out = F.leaky_relu(self.bn6(self.conv6(out)))
         out = F.leaky_relu(self.bn7(self.conv7(out)))
         out = self.bn8(self.conv8(out))
+
+        
         return out
 
-model = PAE()
-print(model)
+#model = PAE()
+#print(model)
