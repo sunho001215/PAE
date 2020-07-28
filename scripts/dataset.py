@@ -6,6 +6,7 @@ import numpy as np
 from PIL import Image
 from torchvision.transforms import transforms
 from torch.utils.data import Dataset
+import torch
 
 class ListDataset(Dataset):
     def __init__(self, list_path, img_size = 640):

@@ -50,6 +50,8 @@ class PAE(nn.Module):
         self.grid_size = 5
         self.obj_scale = 5
         self.noobj_scale = 1
+        self.mse_loss = nn.MSELoss()
+        self.bce_loss = nn.BCELoss()
         # 0
         self.conv1 = nn.Conv2d(3, 32, kernel_size= 3, stride= 1, padding= 1, bias= False)
         self.bn1 = nn.BatchNorm2d(32)
@@ -162,14 +164,14 @@ class PAE(nn.Module):
             target=targets  
         )
         
-        loss_cx = nn.MSELoss(cx[obj_mask], tcx[obj_mask])
-        loss_cy = nn.MSELoss(cy[obj_mask], tcy[obj_mask])
-        loss_dx = nn.MSELoss(dx[obj_mask], tdx[obj_mask])
-        loss_dy = nn.MSELoss(dy[obj_mask], tdy[obj_mask])
-        loss_w = nn.MSELoss(w[obj_mask], tw[obj_mask])
-        loss_h = nn.MSELoss(h[obj_mask], th[obj_mask])
-        loss_conf_obj = nn.BCELoss(pred_conf[obj_mask], tconf[obj_mask])
-        loss_conf_noobj = nn.BCELoss(pred_conf[noobj_mask], tconf[noobj_mask])
+        loss_cx = self.mse_loss(cx[obj_mask], tcx[obj_mask])
+        loss_cy = self.mse_loss(cy[obj_mask], tcy[obj_mask])
+        loss_dx = self.mse_loss(dx[obj_mask], tdx[obj_mask])
+        loss_dy = self.mse_loss(dy[obj_mask], tdy[obj_mask])
+        loss_w = self.mse_loss(w[obj_mask], tw[obj_mask])
+        loss_h = self.mse_loss(h[obj_mask], th[obj_mask])
+        loss_conf_obj = self.bce_loss(pred_conf[obj_mask], tconf[obj_mask])
+        loss_conf_noobj = self.bce_loss(pred_conf[noobj_mask], tconf[noobj_mask])
         total_loss = loss_cx + loss_cy + loss_dx + loss_dy + loss_w + loss_h + self.obj_scale*loss_conf_obj + self.noobj_scale*loss_conf_noobj
 
         return out, total_loss
