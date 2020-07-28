@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F 
 from torch.autograd import Variable
 import numpy as np
+from utils import *
 
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, planes):
@@ -44,6 +45,11 @@ class PAE(nn.Module):
     def __init__(self, img_size = 640):
         super(PAE, self).__init__()
         
+        self.img_size = 640
+        self.ignore_thres = 0.5
+        self.grid_size = 5
+        self.obj_scale = 5
+        self.noobj_scale = 1
         # 0
         self.conv1 = nn.Conv2d(3, 32, kernel_size= 3, stride= 1, padding= 1, bias= False)
         self.bn1 = nn.BatchNorm2d(32)
@@ -97,7 +103,7 @@ class PAE(nn.Module):
             layers.append(BasicBlock(in_planes, planes))
         return nn.Sequential(*layers)
     
-    def forward(self, x):
+    def forward(self, x, targets):
         out = F.leaky_relu(self.bn1(self.conv1(x)))
         out = self.layer1(out)
         out = self.layer2(out)
@@ -119,8 +125,54 @@ class PAE(nn.Module):
         out = F.leaky_relu(self.bn7(self.conv7(out)))
         out = self.bn8(self.conv8(out))
 
+        FloatTensor = torch.cuda.FloatTensor if x.is_cuda else torch.FloatTensor
+        LongTensor = torch.cuda.LongTensor if x.is_cuda else torch.LongTensor
+        ByteTensor = torch.cuda.ByteTensor if x.is_cuda else torch.ByteTensor
+
+        self.grid_x = torch.arange(self.grid_size).repeat(self.grid_size, 1).view([1, 1, self.grid_size, self.grid_size]).type(FloatTensor)
+        self.grid_y = torch.arange(self.grid_size).repeat(self.grid_size, 1).t().view([1, 1, self.grid_size, self.grid_size]).type(FloatTensor)
+
+        num_samples = out.size(0)
+        grid_size = out.size(2)
+
+        prediction = (
+            out.view(num_samples, 3, 7, grid_size, grid_size)
+            .permute(0, 1, 3, 4, 2)
+            .contiguous()
+        )
+
+        cx = torch.sigmoid(prediction[..., 0])
+        cy = torch.sigmoid(prediction[..., 1])
+        dx = torch.sigmoid(prediction[..., 2])
+        dy = torch.sigmoid(prediction[..., 3])
+        w = prediction[..., 4]
+        h = prediction[... , 5]
+        pred_conf = torch.sigmoid(prediction[..., 6])
+
+        pred_boxes = FloatTensor(prediction[..., :6].shape)
+        pred_boxes[..., 0] = cx.data + self.grid_x
+        pred_boxes[..., 1] = cy.data + self.grid_y
+        pred_boxes[..., 2] = dx.data
+        pred_boxes[..., 3] = dy.data
+        pred_boxes[..., 4] = w.data
+        pred_boxes[..., 5] = h.data
+
+        obj_mask, noobj_mask, tcx, tcy, tdx, tdy, tw, th, tconf = build_targets(
+            pred_boxes=pred_boxes,
+            target=targets  
+        )
         
-        return out
+        loss_cx = nn.MSELoss(cx[obj_mask], tcx[obj_mask])
+        loss_cy = nn.MSELoss(cy[obj_mask], tcy[obj_mask])
+        loss_dx = nn.MSELoss(dx[obj_mask], tdx[obj_mask])
+        loss_dy = nn.MSELoss(dy[obj_mask], tdy[obj_mask])
+        loss_w = nn.MSELoss(w[obj_mask], tw[obj_mask])
+        loss_h = nn.MSELoss(h[obj_mask], th[obj_mask])
+        loss_conf_obj = nn.BCELoss(pred_conf[obj_mask], tconf[obj_mask])
+        loss_conf_noobj = nn.BCELoss(pred_conf[noobj_mask], tconf[noobj_mask])
+        total_loss = loss_cx + loss_cy + loss_dx + loss_dy + loss_w + loss_h + self.obj_scale*loss_conf_obj + self.noobj_scale*loss_conf_noobj
+
+        return out, total_loss
 
 #model = PAE()
 #print(model)

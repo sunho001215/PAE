@@ -15,6 +15,7 @@ class ListDataset(Dataset):
         self.label_files = [path.replace("images", "labels").replace(".png",".txt").replace(".jpg",".txt") for path in self.img_files]
         self.img_size = img_size
         self.batch_count = 0
+        self.grid_size = 5
     
     def __getitem__(self, index):
         
@@ -29,20 +30,28 @@ class ListDataset(Dataset):
         targets = None
         if os.path.exists(label_path):
             boxes = torch.from_numpy(np.loadtxt(label_path).reshape(-1, 6))
+            #boxes = np.loadtxt(label_path).reshape(-1,6)
+            #boxes[0] = ((self.img_size*boxes[0])%(img_size/self.grid_size))/(img_size/self.grid_size)
+            #boxes[1] = ((self.img_size*boxes[1])%(img_size/self.grid_size))/(img_size/self.grid_size)
+            #boxes = torch.from_numpy(boxes)
             targets = torch.zeros((len(boxes), 7))
             targets[:, 1:] = boxes
-        
+
         return img_path, img, targets
     
     def collate_fn(self, batch):
         paths, imgs, targets = list(zip(*batch))
-        targets = [boxes for boxes in targets if boxes is not None]
+        # Add sample index to targets
         for i, boxes in enumerate(targets):
+            if boxes is None:
+                continue
             boxes[:, 0] = i
+        # Remove empty placeholder targets
+        targets = [boxes for boxes in targets if boxes is not None]
         targets = torch.cat(targets, 0)
-        imgs = torch.stack(imgs)
+        imgs = torch.stack([img for img in imgs])
         self.batch_count += 1
-        return paths, imgs, targets
+        return paths, imgs, targets 
     
     def __len__(self):
         return len(self.img_files)
