@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F 
 from torch.autograd import Variable
 import numpy as np
-from utils import *
+from scripts.utils import *
 
 class BasicBlock(nn.Module):
     def __init__(self, in_planes, planes):
