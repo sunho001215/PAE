@@ -75,10 +75,11 @@ while i<len(name):
     print(nm[-8:-4])
     dat = []
     img_ori = cv2.imread(nm)
-    title = "IMG"
+    title = "N : Append Current Data, ESC : Save, Next Image, P : Previous Image, D : Delete Current Data"
     img_bird = birdeye(img_ori)
     img = cv2.copyMakeBorder(img_bird, 0, 0, 100, 100, cv2.BORDER_CONSTANT)
     img_copy = copy.deepcopy(img)
+    img_copy = cv2.resize(img_copy, (640, 640))
 
     # cv2.polylines(img, [pts], False, (0, 0, 255))
     cv2.imshow(title, img)
@@ -142,13 +143,13 @@ while i<len(name):
 
         if cv2.waitKey(0) & 0xFF == 27:
             print(dat)
-            fname = open(st+"labels/"+pre+nm[-9:-4]+".txt", "w")
+            fname = open(st+"labels/"+pre+nm[-8:-4]+".txt", "w")
             for indat in dat:
                 for ele in indat:
                     fname.write(str(ele)+" ")
                 fname.write("\n")
             fname.close()
-            cv2.imwrite(st+"images/"+pre+nm[-9:-4]+".jpg", img_copy)
+            cv2.imwrite(st+"images/"+pre+nm[-8:-4]+".jpg", img_copy)
             cv2.destroyAllWindows()
             break
         
