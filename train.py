@@ -8,6 +8,8 @@ from scripts.dataset import *
 from scripts.parse_config import *
 from scripts.utils import *
 import argparse
+import warnings
+warnings.filterwarnings("ignore")
 
 
 if __name__ == "__main__":
@@ -23,7 +25,7 @@ if __name__ == "__main__":
     opt = parser.parse_args()
     
     USE_CUDA = torch.cuda.is_available()
-    DEVICE = torch.device("cuda" if USE_CUDA else "cpu")
+    DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     os.makedirs("output", exist_ok=True)
     os.makedirs("checkpoints", exist_ok=True)
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     train_path = data_config["train"]
     valid_path = data_config["valid"]
   
-    model = PAE.to(DEVICE)
+    model = PAE().to(DEVICE)
     optimizer = torch.optim.Adam(model.parameters())
     
     if opt.pretrained_weights:

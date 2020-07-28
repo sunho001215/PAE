@@ -1,2 +1,2 @@
-train=data/coco/trainvalno5k.txt
-valid=data/coco/5k.txt
+train=data/train.txt
+valid=data/valid.txt

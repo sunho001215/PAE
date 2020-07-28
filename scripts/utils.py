@@ -43,15 +43,15 @@ def build_targets(pred_boxes, target):
     gw, gh = gwh.t()
     gi, gj = gcxy.long().t()
 
-    obj_mask[b, :, gj, gi] = 1
-    noobj_mask[b, :, gj, gi] = 0
-
-    tcx[b, :, gj, gi] = gx - gx.floor()
-    tcy[b, :, gj, gi] = gy - gy.floor()
-    tdx[b, :, gj, gi] = gdx
-    tdy[b, :, gj, gi] = gdy
-    tw[b, :, gj, gi] = gw
-    th[b, :, gj, gi] = gh
+    for i in range(3):
+        tcx[b, i, gj, gi] = gcx - gcx.floor()
+        tcy[b, i, gj, gi] = gcy - gcy.floor()
+        tdx[b, i, gj, gi] = gdx
+        tdy[b, i, gj, gi] = gdy
+        tw[b, i, gj, gi] = gw
+        th[b, i, gj, gi] = gh
+        obj_mask[b, i, gj, gi] = 1
+        noobj_mask[b, i, gj, gi] = 0
 
     tconf = obj_mask.float()
     return obj_mask, noobj_mask, tcx, tcy, tdx, tdy, tw, th, tconf
