@@ -61,7 +61,7 @@ def onMouse(event, x, y, flags, param):
             cv2.circle(img, pt3, 6, (255,0,0), -1) 
         if not pt4 == (-1,-1):
             cv2.circle(img, pt4, 6, (150,0,150), -1)
-        cv2.imshow("IMG",img)
+        cv2.imshow(title,img)
 
 
 name = list(glob.glob(st+'backup/*.jpg'))
@@ -72,7 +72,7 @@ i = 0
 while i<len(name):
 
     nm = name[i]
-    print(nm[-8:-4])
+    print(nm[-9:-4])
     dat = []
     img_ori = cv2.imread(nm)
     title = "N : Append Current Data, ESC : Save, Next Image, P : Previous Image, D : Delete Current Data"
@@ -128,7 +128,7 @@ while i<len(name):
             pts = pts.reshape((-1, 1, 2))
             cv2.polylines(img, np.int32([pts]), False, (0, 0, 255))
             cv2.arrowedLine(img, (int(cen_x), int(cen_y)), (int(mid_x), int(mid_y)), (0, 0, 255), 1)
-            cv2.imshow("IMG",img)
+            cv2.imshow(title,img)
             # img = cv2.copyMakeBorder(birdeye(cv2.imread(nm)), 0, 0, 100, 100, cv2.BORDER_CONSTANT)
 
         if key == ord('d') or key == ord('D'):
@@ -143,13 +143,13 @@ while i<len(name):
 
         if cv2.waitKey(0) & 0xFF == 27:
             print(dat)
-            fname = open(st+"labels/"+pre+nm[-8:-4]+".txt", "w")
+            fname = open(st+"labels/"+pre+nm[-9:-4]+".txt", "w")
             for indat in dat:
                 for ele in indat:
                     fname.write(str(ele)+" ")
                 fname.write("\n")
             fname.close()
-            cv2.imwrite(st+"images/"+pre+nm[-8:-4]+".jpg", img_copy)
+            cv2.imwrite(st+"images/"+pre+nm[-9:-4]+".jpg", img_copy)
             cv2.destroyAllWindows()
             break
         

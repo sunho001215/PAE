@@ -72,7 +72,7 @@ i = 0
 while i<len(name):
 
     nm = name[i]
-    print(nm[-8:-4])
+    print(nm[-9:-4])
     dat = []
     img_ori = cv2.imread(nm)
     title = "N : Append Current Data, ESC : Save, Next Image, P : Previous Image, D : Delete Current Data"
