@@ -145,8 +145,8 @@ class PAE(nn.Module):
 
         cx = torch.sigmoid(prediction[..., 0])
         cy = torch.sigmoid(prediction[..., 1])
-        dx = torch.sigmoid(prediction[..., 2])
-        dy = torch.sigmoid(prediction[..., 3])
+        dx = torch.tanh(prediction[..., 2])
+        dy = torch.tanh(prediction[..., 3])
         w = prediction[..., 4]
         h = prediction[... , 5]
         pred_conf = torch.sigmoid(prediction[..., 6])
