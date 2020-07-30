@@ -7,8 +7,8 @@ width = 600
 height = 800
 
 # name = "/home/ayoung/Pictures/right_parking_data/right_frame0.jpg"
-st = "/home/ayoung/Pictures/"
-pre = "right_"
+st = "/home/snuzero/PAE/data/"
+pre = "left_"
 pt1 = (-1, -1)
 pt2 = (-1, -1)
 pt3 = (-1, -1)
@@ -112,7 +112,7 @@ while i<len(name):
             dy = dy/rt
             hei = (math.sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)+math.sqrt((pt3[0]-pt4[0])**2+(pt3[1]-pt4[1])**2))/2
             wid = (math.sqrt((pt1[0]-pt4[0])**2+(pt1[1]-pt4[1])**2)+math.sqrt((pt3[0]-pt2[0])**2+(pt3[1]-pt2[1])**2))/2
-            dat.append((cen_x/800, cen_y/800, dx/800, dy/800, wid/800, hei/800))
+            dat.append((cen_x/800, cen_y/800, dx, dy, wid/800, hei/800))
             print(dat)
             cs = dx
             sn = dy

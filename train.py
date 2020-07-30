@@ -15,7 +15,7 @@ warnings.filterwarnings("ignore")
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=200, help="number of epochs")
-    parser.add_argument("--batch_size", type=int, default=5 , help="size of each image batch")
+    parser.add_argument("--batch_size", type=int, default=4 , help="size of each image batch")
     parser.add_argument("--data_config", type=str, default="data/PAE.data", help="path to data config file")
     parser.add_argument("--img_size", type=int, default=640, help="size of each image dimension")
     parser.add_argument("--n_cpu", type=int, default=8, help="number of cpu threads to use during batch generation")
@@ -55,6 +55,7 @@ if __name__ == "__main__":
         collate_fn=dataset.collate_fn,
     )
 
+    #loss_values = []
     for epoch in range(opt.epochs):
         model.train()
         for batch_idx, (_, imgs, targets) in enumerate(dataloader):
@@ -70,9 +71,16 @@ if __name__ == "__main__":
             if batches_done % opt.gradient_accumulations:
                 optimizer.step()
                 optimizer.zero_grad()
+
+            #loss_values.append(loss.item())
+            #plt.plot(loss_values)
+            #plt.pause(0.05)
             
             print('[{}][{}] Test Loss : {:.4f}'.format(epoch, batch_idx, loss))
         
         if epoch % opt.checkpoint_interval == 0:
             torch.save(model.state_dict(), f"checkpoints/pae_ckpt_%d.pth" % epoch)
+        
+        #plt.show()
+
             

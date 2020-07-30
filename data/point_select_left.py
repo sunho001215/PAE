@@ -7,7 +7,7 @@ width = 600
 height = 800
 
 # name = "/home/ayoung/Pictures/right_parking_data/right_frame0.jpg"
-st = "/home/ayoung/Pictures/"
+st = "/home/snuzero/PAE/data/"
 pre = "left_"
 pt1 = (-1, -1)
 pt2 = (-1, -1)

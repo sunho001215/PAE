@@ -1,8 +1,8 @@
 import cv2
 import glob
 
-st = "/home/ayoung/Pictures/"
-pre = "left_"
+st = "/home/snuzero/PAE/data/"
+pre = "right_"
 
 def xflip(img):
     subpre = "x_"
