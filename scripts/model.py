@@ -105,7 +105,7 @@ class PAE(nn.Module):
             layers.append(BasicBlock(in_planes, planes))
         return nn.Sequential(*layers)
     
-    def forward(self, x, targets):
+    def forward(self, x, targets = None):
         out = F.leaky_relu(self.bn1(self.conv1(x)))
         out = self.layer1(out)
         out = self.layer2(out)
@@ -159,20 +159,24 @@ class PAE(nn.Module):
         pred_boxes[..., 4] = w.data
         pred_boxes[..., 5] = h.data
 
-        obj_mask, noobj_mask, tcx, tcy, tdx, tdy, tw, th, tconf = build_targets(
+        total_loss = 0
+
+        if targets != None:
+            obj_mask, noobj_mask, tcx, tcy, tdx, tdy, tw, th, tconf = build_targets(
             pred_boxes=pred_boxes,
             target=targets  
-        )
+            )
+            
+            loss_cx = self.mse_loss(cx[obj_mask], tcx[obj_mask])
+            loss_cy = self.mse_loss(cy[obj_mask], tcy[obj_mask])
+            loss_dx = self.mse_loss(dx[obj_mask], tdx[obj_mask])
+            loss_dy = self.mse_loss(dy[obj_mask], tdy[obj_mask])
+            loss_w = self.mse_loss(w[obj_mask], tw[obj_mask])
+            loss_h = self.mse_loss(h[obj_mask], th[obj_mask])
+            loss_conf_obj = self.bce_loss(pred_conf[obj_mask], tconf[obj_mask])
+            loss_conf_noobj = self.bce_loss(pred_conf[noobj_mask], tconf[noobj_mask])
+            total_loss = loss_cx + loss_cy + loss_dx + loss_dy + loss_w + loss_h + self.obj_scale*loss_conf_obj + self.noobj_scale*loss_conf_noobj
         
-        loss_cx = self.mse_loss(cx[obj_mask], tcx[obj_mask])
-        loss_cy = self.mse_loss(cy[obj_mask], tcy[obj_mask])
-        loss_dx = self.mse_loss(dx[obj_mask], tdx[obj_mask])
-        loss_dy = self.mse_loss(dy[obj_mask], tdy[obj_mask])
-        loss_w = self.mse_loss(w[obj_mask], tw[obj_mask])
-        loss_h = self.mse_loss(h[obj_mask], th[obj_mask])
-        loss_conf_obj = self.bce_loss(pred_conf[obj_mask], tconf[obj_mask])
-        loss_conf_noobj = self.bce_loss(pred_conf[noobj_mask], tconf[noobj_mask])
-        total_loss = loss_cx + loss_cy + loss_dx + loss_dy + loss_w + loss_h + self.obj_scale*loss_conf_obj + self.noobj_scale*loss_conf_noobj
 
         return out, total_loss
 

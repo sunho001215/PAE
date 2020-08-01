@@ -14,7 +14,7 @@ warnings.filterwarnings("ignore")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--epochs", type=int, default=200, help="number of epochs")
+    parser.add_argument("--epochs", type=int, default=100, help="number of epochs")
     parser.add_argument("--batch_size", type=int, default=4 , help="size of each image batch")
     parser.add_argument("--data_config", type=str, default="data/PAE.data", help="path to data config file")
     parser.add_argument("--img_size", type=int, default=640, help="size of each image dimension")
